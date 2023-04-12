@@ -1,43 +1,100 @@
 import React, { useState } from 'react';
-import  DigitGuesser from "./DigitGuesser";
-import  ButtonsRow from "./ButtonsRow";
-import { Container, Button } from 'react-bootstrap';
+import { Container, Row } from 'react-bootstrap';
+import DigitsInput from "./DigitsInput";
+import GameButtons from "./GameButtons";
+import GameRules from "./GameRules";
 
-function MainPage() {
+function MainPage({ numberGenerator, randomNum }) {
     // all form inputs are stored in this state
     const [inputs, setInputs] = useState({});
-
     const [result, setResult] = useState('');
 
-    /**
-     * Handle input change in the form. Note that the name of the input
-     * is used to determine which state to update but no hard-coding is
-     * required.
-     * @param event
-     */
-    const handleChange = (event) => {
-        const name = event.target.name;
-        const value = event.target.value;
-        // the expression [name] is evaluated to the value of the variable name
-        // note that the square brackets [] do not denote an array!
-        setInputs(values => ({...values, [name]: value}))
-    }
+    // Buttons states
+    const [gameStarted, setGameStarted] = useState(true);
+    const [showRules, setShowRules] = useState(false);
+
+
+    const handleChange = (name, value) => {
+        if (value === "") {
+            setInputs(prevInputs => {
+                const newInputs = {...prevInputs};
+                delete newInputs[name];
+                return newInputs;
+            });
+        } else {
+            setInputs(values => ({...values, [name]: value}));
+        }
+    };
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        setResult(JSON.stringify(inputs)); // for demonstration purposes only
-    }
+        const size = Object.keys(inputs).length;
+        if (size < 4) {
+            setResult(JSON.stringify("Please enter all 4 digits."));
+        } else {
+            const { bulls, cows } = compareNumbers();
+            //if(bulls === 4) win game;
+
+            setResult(
+                "Cows: " +
+                JSON.stringify(cows) +
+                "\nBulls: " +
+                JSON.stringify(bulls)
+            );
+        }
+    };
+
+    const compareNumbers = () => {
+        let cows = 0;
+        let bulls = 0;
+        const divisor = 10;
+        let randNum = randomNum;
+        for (let i = 0; i < Object.keys(inputs).length; i++) {
+            let digitInCorrect = Math.floor(randNum % divisor);
+            randNum = Math.floor(randNum / divisor);
+            let digitName = "digit" + (4 - i);
+            let digitInGuess = inputs[digitName];
+
+            if (digitInCorrect.toString() === digitInGuess) {
+                bulls++;
+            } else if (randomNum.toString().includes(digitInGuess)) {
+                cows++;
+            }
+        }
+        return { bulls, cows };
+    };
+
+    const handleNewGameClick = () => {
+        setInputs({});
+        setResult('');
+        setGameStarted(true);
+    };
+
+    const handleShowRulesClick = () => {
+        setShowRules(prevShowRules => !prevShowRules);
+    };
 
     return (
         <Container>
-            <ButtonsRow/>
+            <Row>
+                {showRules ? <GameButtons
+                        onNewGameClick={handleNewGameClick}
+                        onShowRulesClick={handleShowRulesClick}
+                        name="Hide Rules" />
+                    : <GameButtons
+                        onNewGameClick={handleNewGameClick}
+                        onShowRulesClick={handleShowRulesClick}
+                        name="Show Rules" />
+                }
+            </Row>
+            <Row>
+                {showRules ? <GameRules /> : null}
+                {gameStarted ? <DigitsInput onChange={handleChange} onSubmit={handleSubmit} /> : null}
 
-            <form onSubmit={handleSubmit}>
-                <button className="btn btn-primary m-3" type="submit">Submit</button>
-                {result ? <div className="border p-3">Result is {result}</div> : ""}
-            </form>
+                {result ? <div className="border p-3">{result}</div> : ""}
+            </Row>
         </Container>
-    )
+    );
 }
 
 export default MainPage;

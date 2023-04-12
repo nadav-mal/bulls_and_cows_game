@@ -1,11 +1,9 @@
-import React, { useState } from 'react';
-import './Dropdown.css'; // import any styling for the dropdown here
+import './Components.css'; // import any styling for the dropdown here
 
-const Dropdown = () => {
-    const [selectedDigit, setSelectedDigit] = useState(null);
-
+const DigitDropdown = ({ name, onChange }) => {
     const handleChange = (e) => {
-        setSelectedDigit(e.target.value);
+        const value = e.target.value;
+        onChange(name, value);
     };
 
     return (
@@ -27,4 +25,4 @@ const Dropdown = () => {
     );
 };
 
-export default Dropdown;
+export default DigitDropdown;
