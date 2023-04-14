@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { Container, Row } from 'react-bootstrap';
+import { Row, Col } from 'react-bootstrap';
 import DigitsInput from "./DigitsInput";
 import GameButtons from "./GameButtons";
 import GameRules from "./GameRules";
 
-function MainPage({ numberGenerator, randomNum }) {
+function GameInputs({ numberGenerator, randomNum, compareNumbers }) {
     // all form inputs are stored in this state
     const [inputs, setInputs] = useState({});
-    const [result, setResult] = useState('');
+    const [result, setResult] = useState('Your history of guesses will appear below:');
 
     // Buttons states
     const [gameStarted, setGameStarted] = useState(true);
@@ -32,7 +32,7 @@ function MainPage({ numberGenerator, randomNum }) {
         if (size < 4) {
             setResult(JSON.stringify("Please enter all 4 digits."));
         } else {
-            const { bulls, cows } = compareNumbers();
+            const { bulls, cows } = compareNumbers(randomNum,inputs);
             //if(bulls === 4) win game;
 
             setResult(
@@ -44,25 +44,7 @@ function MainPage({ numberGenerator, randomNum }) {
         }
     };
 
-    const compareNumbers = () => {
-        let cows = 0;
-        let bulls = 0;
-        const divisor = 10;
-        let randNum = randomNum;
-        for (let i = 0; i < Object.keys(inputs).length; i++) {
-            let digitInCorrect = Math.floor(randNum % divisor);
-            randNum = Math.floor(randNum / divisor);
-            let digitName = "digit" + (4 - i);
-            let digitInGuess = inputs[digitName];
 
-            if (digitInCorrect.toString() === digitInGuess) {
-                bulls++;
-            } else if (randomNum.toString().includes(digitInGuess)) {
-                cows++;
-            }
-        }
-        return { bulls, cows };
-    };
 
     const handleNewGameClick = () => {
         setInputs({});
@@ -75,17 +57,17 @@ function MainPage({ numberGenerator, randomNum }) {
     };
 
     return (
-        <Container>
+        <Col>
             <Row>
-                {showRules ? <GameButtons
-                        onNewGameClick={handleNewGameClick}
-                        onShowRulesClick={handleShowRulesClick}
-                        name="Hide Rules" />
-                    : <GameButtons
-                        onNewGameClick={handleNewGameClick}
-                        onShowRulesClick={handleShowRulesClick}
-                        name="Show Rules" />
-                }
+                    {showRules ? <GameButtons
+                            onNewGameClick={handleNewGameClick}
+                            onShowRulesClick={handleShowRulesClick}
+                            name="Hide Rules" />
+                        : <GameButtons
+                            onNewGameClick={handleNewGameClick}
+                            onShowRulesClick={handleShowRulesClick}
+                            name="Show Rules" />
+                    }
             </Row>
             <Row>
                 {showRules ? <GameRules /> : null}
@@ -93,8 +75,8 @@ function MainPage({ numberGenerator, randomNum }) {
 
                 {result ? <div className="border p-3">{result}</div> : ""}
             </Row>
-        </Container>
+        </Col>
     );
 }
 
-export default MainPage;
+export default GameInputs;

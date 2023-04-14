@@ -7,16 +7,16 @@ const DigitsInput = ({ onChange, onSubmit }) => {
     return (
         <form onSubmit={onSubmit}>
             <Row>
-                <Col>
+                <Col className={'col-lg-3 col-md-6 col-12'}>
                     <DigitDropdown name="digit1" onChange={onChange}/>
                 </Col>
-                <Col>
+                <Col className={'col-lg-3 col-md-6 col-12'}>
                     <DigitDropdown name="digit2" onChange={onChange}/>
                 </Col>
-                <Col>
+                <Col className={'col-lg-3 col-md-6 col-12'}>
                     <DigitDropdown name="digit3" onChange={onChange}/>
                 </Col>
-                <Col>
+                <Col className={'col-lg-3 col-md-6 col-12'}>
                     <DigitDropdown name="digit4" onChange={onChange}/>
                 </Col>
             </Row>
