@@ -4,7 +4,7 @@ import DigitsInput from "./DigitsInput";
 import GameButtons from "./GameButtons";
 import GameRules from "./GameRules";
 
-function GameInputs({ numberGenerator, randomNum, compareNumbers }) {
+function GameInputs({ guessesNum, randomNum, compareNumbers, setWonGame }) {
     // all form inputs are stored in this state
     const [inputs, setInputs] = useState({});
     const [result, setResult] = useState('Your history of guesses will appear below:');
@@ -32,19 +32,40 @@ function GameInputs({ numberGenerator, randomNum, compareNumbers }) {
         if (size < 4) {
             setResult(JSON.stringify("Please enter all 4 digits."));
         } else {
-            const { bulls, cows } = compareNumbers(randomNum,inputs);
-            //if(bulls === 4) win game;
+            if(validateInput(inputs)) {
+                const { bulls, cows } = compareNumbers(randomNum,inputs);
+                if(bulls === 4) {
+                    setWonGame(true);
+                    setGameStarted(false);
+                }
 
-            setResult(
-                "Cows: " +
-                JSON.stringify(cows) +
-                "\nBulls: " +
-                JSON.stringify(bulls)
-            );
+                setResult(
+                    "Cows: " +
+                    JSON.stringify(cows) +
+                    "\nBulls: " +
+                    JSON.stringify(bulls)
+                );
+            }
+            else {
+                setResult(JSON.stringify("All 4 digits must be unique."));
+            }
         }
     };
 
+    const validateInput = (inputs) => {
+        let isValid = true;
+        const digits = new Array(10).fill(false);
 
+        for (let i = 0; i < Object.keys(inputs).length; i++) {
+            let digitName = "digit" + (4 - i);
+            let digitInGuess = inputs[digitName];
+            if(digits[digitInGuess] === false)
+                digits[digitInGuess] = true;
+            else return false;
+        }
+
+        return true;
+    };
 
     const handleNewGameClick = () => {
         setInputs({});

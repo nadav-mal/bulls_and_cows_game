@@ -7,6 +7,7 @@ import GuessesHistory from "./GuessesHistory";
 
 const MainPage = ({getRandomNumber, randomNum}) => {
     const [guesses, setGuesses] = useState([]);
+    const [wonGame, setWonGame] = useState(false);
 
     const addGuess = (newGuess) => {
         setGuesses([newGuess, ...guesses]);
@@ -40,8 +41,13 @@ const MainPage = ({getRandomNumber, randomNum}) => {
 
     return (
         <>
-            <GameInputs numberGenerator={getRandomNumber} randomNum={randomNum} compareNumbers = {compareNumbers}/>
-            <GuessesHistory guesses={guesses}/>
+            <GameInputs
+                guessesNum={guesses.length}
+                randomNum={randomNum}
+                compareNumbers = {compareNumbers}
+                setWonGame = {setWonGame}
+            />
+            {wonGame ? null : <GuessesHistory guesses={guesses}/>}
         </>
     )
 }
