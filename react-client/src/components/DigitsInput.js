@@ -1,32 +1,35 @@
-import {Col, Row} from "react-bootstrap";
+import { Col, Row } from "react-bootstrap";
 import DigitDropdown from "./DigitDropdown";
 import React from "react";
-import './Components.css'; // import any styling for the dropdown here
+import "./Components.css";
 
 const DigitsInput = ({ onChange, onSubmit }) => {
+    const colClass = "col-lg-3 col-md-6 col-12";
+    const digitsNames = ["digit1", "digit2", "digit3", "digit4"];
+
+    const getCols = () => {
+        const tempCols = digitsNames.map((digit) => (
+            <Col className={colClass} key={digit}>
+                <DigitDropdown name={digit} onChange={onChange} />
+            </Col>
+        ));
+        return <>{tempCols}</>;
+    };
+
+    const cols = getCols();
+
     return (
         <form onSubmit={onSubmit}>
-            <Row>
-                <Col className={'col-lg-3 col-md-6 col-12'}>
-                    <DigitDropdown name="digit1" onChange={onChange}/>
-                </Col>
-                <Col className={'col-lg-3 col-md-6 col-12'}>
-                    <DigitDropdown name="digit2" onChange={onChange}/>
-                </Col>
-                <Col className={'col-lg-3 col-md-6 col-12'}>
-                    <DigitDropdown name="digit3" onChange={onChange}/>
-                </Col>
-                <Col className={'col-lg-3 col-md-6 col-12'}>
-                    <DigitDropdown name="digit4" onChange={onChange}/>
-                </Col>
-            </Row>
+            <Row>{cols}</Row>
             <Row>
                 <Col>
-                    <button className="btn btn-primary m-3" type="submit">Ok</button>
+                    <button className="btn btn-primary m-3" type="submit">
+                        Ok
+                    </button>
                 </Col>
             </Row>
         </form>
-    )
-}
+    );
+};
 
 export default DigitsInput;
