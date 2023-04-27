@@ -4,7 +4,7 @@ import DigitsInput from "./DigitsInput";
 import GameButtons from "./GameButtons";
 import GameRules from "./GameRules";
 
-function GameInputs({ guessesNum, randomNum, compareNumbers, setWonGame }) {
+function GameInputs({randomNum, compareNumbers, setWonGame, setGuessesNum, setNewValue }) {
     // all form inputs are stored in this state
     const [inputs, setInputs] = useState({});
     const [result, setResult] = useState('Your history of guesses will appear below:');
@@ -26,6 +26,8 @@ function GameInputs({ guessesNum, randomNum, compareNumbers, setWonGame }) {
         }
     };
 
+
+
     const handleSubmit = (event) => {
         event.preventDefault();
         const size = Object.keys(inputs).length;
@@ -35,22 +37,26 @@ function GameInputs({ guessesNum, randomNum, compareNumbers, setWonGame }) {
             if(validateInput(inputs)) {
                 const { bulls, cows } = compareNumbers(randomNum,inputs);
                 if(bulls === 4) {
+                    setResult(null);
                     setWonGame(true);
                     setGameStarted(false);
                 }
+                else {
+                    setResult(
+                        "Cows: " +
+                        JSON.stringify(cows) +
+                        "\nBulls: " +
+                        JSON.stringify(bulls)
+                    );
+                }
 
-                setResult(
-                    "Cows: " +
-                    JSON.stringify(cows) +
-                    "\nBulls: " +
-                    JSON.stringify(bulls)
-                );
             }
             else {
                 setResult(JSON.stringify("All 4 digits must be unique."));
             }
         }
     };
+
 
     const validateInput = (inputs) => {
         let isValid = true;
@@ -70,7 +76,10 @@ function GameInputs({ guessesNum, randomNum, compareNumbers, setWonGame }) {
     const handleNewGameClick = () => {
         setInputs({});
         setResult('');
+        setWonGame(false);
+        setGuessesNum([]);
         setGameStarted(true);
+        setNewValue();
     };
 
     const handleShowRulesClick = () => {

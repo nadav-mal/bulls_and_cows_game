@@ -3,9 +3,9 @@ import React, { useState } from 'react';
 import { Row, Col } from 'react-bootstrap';
 import GameInputs from "./GameInputs";
 import GuessesHistory from "./GuessesHistory";
+import WinComponent from "./WinComponent";
 
-
-const MainPage = ({getRandomNumber, randomNum}) => {
+const MainPage = ({setRandomVal, randomNum}) => {
     const [guesses, setGuesses] = useState([]);
     const [wonGame, setWonGame] = useState(false);
 
@@ -42,12 +42,13 @@ const MainPage = ({getRandomNumber, randomNum}) => {
     return (
         <>
             <GameInputs
-                guessesNum={guesses.length}
                 randomNum={randomNum}
                 compareNumbers = {compareNumbers}
                 setWonGame = {setWonGame}
+                setGuessesNum={setGuesses}
+                setNewValue = {setRandomVal}
             />
-            {wonGame ? null : <GuessesHistory guesses={guesses}/>}
+            {wonGame ? <WinComponent guesses={ guesses.length}/> : <GuessesHistory guesses={guesses}/>}
         </>
     )
 }

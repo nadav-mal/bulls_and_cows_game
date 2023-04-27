@@ -16,35 +16,38 @@ const GuessesHistory = ({ guesses }) => {
         border: `2px solid #668ba4`, // add this line to set the border color
         borderRadius: '0px',
     };
-
+    if(guesses)
+        return(
+            <></>
+        )
     return (
-        <Row style={rowStyle}>
-            <Col>
-                <h3 style={headerStyle}>Guesses History</h3>
-                <div style={{ height: TABLE_HEIGHT, overflowY: 'scroll' }}>
-                    <Table striped bordered hover style={tableStyle}>
-                        <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Guess</th>
-                            <th>Bulls</th>
-                            <th>Cows</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {guesses.reverse().map((guess, index) => (
-                            <tr key={index}>
-                                <td>{guesses.length - index}</td>
-                                <td>{guess.guess}</td>
-                                <td>{guess.bulls}</td>
-                                <td>{guess.cows}</td>
+            guesses ? <Row style={rowStyle}>
+                <Col>
+                    <h3 style={headerStyle}>Guesses History</h3>
+                    <div style={{ height: TABLE_HEIGHT, overflowY: 'scroll' }}>
+                        <Table striped bordered hover style={tableStyle}>
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Guess</th>
+                                <th>Bulls</th>
+                                <th>Cows</th>
                             </tr>
-                        ))}
-                        </tbody>
-                    </Table>
-                </div>
-            </Col>
-        </Row>
+                            </thead>
+                            <tbody>
+                            {guesses.reverse().map((guess, index) => (
+                                <tr key={index}>
+                                    <td>{guesses.length - index}</td>
+                                    <td>{guess.guess}</td>
+                                    <td>{guess.bulls}</td>
+                                    <td>{guess.cows}</td>
+                                </tr>
+                            ))}
+                            </tbody>
+                        </Table>
+                    </div>
+                </Col>
+            </Row> : <></>
     );
 };
 
