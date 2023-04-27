@@ -73,7 +73,7 @@ function GameInputs({ numberGenerator, randomNum, compareNumbers }) {
                 {showRules ? <GameRules /> : null}
                 {gameStarted ? <DigitsInput onChange={handleChange} onSubmit={handleSubmit} /> : null}
 
-                {result ? <div className="border p-3">{result}</div> : ""}
+                {result ? <div className="border p-3">{result}</div> : ''}
             </Row>
         </Col>
     );

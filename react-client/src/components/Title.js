@@ -20,7 +20,7 @@ function Title() {
 
     const smallScreenTitleStyle = {
         ...titleStyle,
-        fontSize: '3rem',
+        fontSize: '2rem',
     }
 
     return (
