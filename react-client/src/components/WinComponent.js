@@ -18,8 +18,30 @@ const WinComponent = ({guesses}) => {
 
     const handleSubmit = (event) => {
         event.preventDefault();
+        postNewScore(event.target.value, guesses);
+        console.log(event.target.value);
+        console.log(guesses)
         // handle submit logic here
     };
+
+    const postNewScore = (name, score) => {
+        fetch('/java_react_war/api/highscores', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                name: name,
+                score: score
+            })
+        })
+            .then(response => {
+                // handle the response
+            })
+            .catch(error => {
+                // handle the error
+            });
+    }
 
     return (
         <Col className={'col-12'} style={WinComponentStyle}>
