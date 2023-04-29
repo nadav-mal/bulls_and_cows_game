@@ -42,7 +42,7 @@ const MainPage = ({setRandomVal, randomNum}) => {
                 console.log(error);
             });
         console.log(data);
-        return data;
+        return data!= undefined ? data : null;
     }
     const compareNumbers = (randomNum, inputs) => {
 

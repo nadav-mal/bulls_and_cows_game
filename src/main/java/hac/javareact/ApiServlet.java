@@ -127,7 +127,7 @@ public class ApiServlet extends HttpServlet {
         List<Score> scores = loadScores(); // read in existing scores
         scores.add(newScore); // add new score
         String realPath = getServletContext().getRealPath("scores");
-        FileOutputStream fos = new FileOutputStream("scores.dat", false); // open file for writing (false to overwrite)
+        FileOutputStream fos = new FileOutputStream(realPath, false); // open file for writing (false to overwrite)
         ObjectOutputStream oos = new ObjectOutputStream(fos);
         for (Score score : scores) {
             oos.writeObject(score); // write each score to the file
@@ -139,7 +139,7 @@ public class ApiServlet extends HttpServlet {
 
         List<Score> scores = new ArrayList<>();
         String realPath = getServletContext().getRealPath("scores");
-        FileInputStream fis = new FileInputStream("scores.dat");
+        FileInputStream fis = new FileInputStream(realPath);
         ObjectInputStream ois = new ObjectInputStream(fis);
         try {
             while (true) {

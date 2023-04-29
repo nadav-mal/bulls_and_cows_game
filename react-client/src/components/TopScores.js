@@ -4,6 +4,8 @@ import { Table } from 'react-bootstrap';
 const TopScores = ({ scores }) => {
 
     const renderScores = () => {
+        if(!scores)
+            return (<></>)
         if (scores.length === 0) {
             return (
                 <tr>
