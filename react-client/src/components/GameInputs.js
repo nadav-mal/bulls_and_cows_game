@@ -13,7 +13,6 @@ function GameInputs({randomNum, compareNumbers, setWonGame, setGuessesNum, setNe
     const [gameStarted, setGameStarted] = useState(true);
     const [showRules, setShowRules] = useState(false);
 
-
     const handleChange = (name, value) => {
         if (value === "") {
             setInputs(prevInputs => {

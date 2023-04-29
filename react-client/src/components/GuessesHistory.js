@@ -16,10 +16,6 @@ const GuessesHistory = ({ guesses }) => {
         border: `2px solid #668ba4`, // add this line to set the border color
         borderRadius: '0px',
     };
-    if(guesses)
-        return(
-            <></>
-        )
     return (
             guesses ? <Row style={rowStyle}>
                 <Col>

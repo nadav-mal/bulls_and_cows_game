@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import java.io.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.stream.Collectors;
 /* You can delete this comment before submission - it's only here to help you get started.
@@ -16,12 +17,6 @@ fetch("/java_react_war/api/highscores")
 
 @WebServlet(name = "ServletApi", value = "/api/highscores")
 public class ApiServlet extends HttpServlet {
-    FileInputStream reader;
-    FileOutputStream writer;
-    private static final String SCORES_FILE = "scores.dat";
-    private static final String nameParam = "name";
-    private static final String scoreParam = "score";
-
     /**
      * @param request
      * @param response
@@ -29,6 +24,7 @@ public class ApiServlet extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        System.out.println("In get");
         response.setContentType("application/json");
         response.setHeader("Access-Control-Allow-Origin","*");
         try {
@@ -76,11 +72,12 @@ public class ApiServlet extends HttpServlet {
         int currScore = 0;
         try {
             currScore = Integer.parseInt(scoreStr);
-
             Score highScore = new Score(name,currScore);
             handleHighScore(response,highScore);
         } catch (NumberFormatException e) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        } finally {
+            System.out.println("After post");
         }
     }
     private synchronized void handleHighScore(HttpServletResponse res,Score score){
@@ -92,27 +89,22 @@ public class ApiServlet extends HttpServlet {
             JsonObject jsonResponse = new JsonObject();
             jsonResponse.addProperty("name", score.getName());
             jsonResponse.addProperty("score", score.getGuesses());
-            jsonResponse.addProperty("msg", "You suck");
             // Write the JSON object to the response output stream
             PrintWriter out = res.getWriter();
             out.print(gson.toJson(jsonResponse));
             out.flush();
 
         } catch(IOException e){
+            System.out.println("In IO ");
             res.setStatus(HttpServletResponse.SC_CONFLICT);
         }
         catch(ClassNotFoundException e){
+            System.out.println("In classNotFound");
             res.setStatus(HttpServletResponse.SC_CONFLICT);
         }
     }
     @Override
     public void init() {
-        //This for now (find something to do here)
-        //try {
-       //     writer = new FileOutputStream("scores.dat");
-       // } catch (FileNotFoundException e) {
-       //     throw new RuntimeException(e);
-        //}
     }
 
 
@@ -121,40 +113,76 @@ public class ApiServlet extends HttpServlet {
     }
 
     private synchronized void addScore(Score newScore) throws IOException, ClassNotFoundException {
-        String realPath = getServletContext().getRealPath("scores.dat");
-        File file = new File(realPath);
-        if(!file.exists()) file.createNewFile();
-        FileOutputStream fos = new FileOutputStream(realPath, true);
-        ObjectOutputStream oos = new ObjectOutputStream(fos);
-        oos.writeObject(newScore); // write each score to the file
-        oos.close();
-    }
+        File file = getFile();
+        List<Score> scores = loadScores();
+        final int NOTFOUND= -1;
 
-    private List<Score> loadScores() throws IOException, ClassNotFoundException {
+        int index = handleDupes(newScore, scores);
+        if(index != NOTFOUND)
+            scores.set(index, newScore);
+        else
+            scores.add(newScore);
 
-        List<Score> scores = new ArrayList<>();
-        String realPath = getServletContext().getRealPath("scores.dat");
-        System.out.println("Here0");
-        System.out.println(realPath);
-        FileInputStream fis = new FileInputStream(realPath);
-        ObjectInputStream ois = new ObjectInputStream(fis);
-        try {
-            while (true) {
-                System.out.println("Here1");
-                Score score = (Score) ois.readObject();
-                System.out.println(score.getName());
-                scores.add(score);
-            }
-        } catch (EOFException e) {
-            // end of file reached, ignore exception
-        } finally {
-            ois.close();
-            System.out.println("Here2");
+        try(ObjectOutputStream oos = new ObjectOutputStream(Files.newOutputStream(file.toPath()))){
+            oos.writeObject(scores);
         }
-        System.out.println("Here3");
-        return scores;
     }
 
+  private int handleDupes(Score newScore, List<Score> scores){
+      int index = -1;
+      // Iterate over the scores list and check for duplicates
+      for (int i = 0; i < scores.size(); i++) {
+          Score score = scores.get(i);
+          if (score.getName().equals(newScore.getName())) {
+              if (newScore.getGuesses() < score.getGuesses())
+                  index = i;
+              break;
+          }
+      }
+      return index;
+  }
 
+    private int handleDuplicate(Score newScore, List<Score> scores){
+        // If there is a match, update the existing score to the best score of them all
+        for (int i = 0; i < scores.size(); i++) {
+            Score score = scores.get(i);
+            if (score.getName().equals(newScore.getName())) {
+                return i;
+            }
+        }
+        return -1;
+    }
 
+    private List<Score> loadScores() throws ClassNotFoundException {
+        File file = getFile();
+        List<Score> scores = new ArrayList<>();
+        try(ObjectInputStream ois = new ObjectInputStream(Files.newInputStream(file.toPath()))){
+            System.out.println("Before reading obj");
+            scores = (List<Score>) ois.readObject();
+            System.out.println("TEST" + scores);
+        } catch(EOFException e){
+            //Ignore this
+            System.out.println("In EOF137--");
+
+        } finally {
+            System.out.println(scores);
+            return scores;
+        }
+    }
+
+    private File getFile(){
+        String realPath = getServletContext().getRealPath("scores");
+        File file = new File(realPath);
+        try{
+            if(!file.exists()){
+                System.out.println("Creating new file");
+                file.createNewFile();
+            }
+        } catch (IOException e) {
+            System.out.println("Something is wrong");
+            throw new RuntimeException(e);
+        }
+        System.out.println("Returning file");
+        return file;
+    }
 }

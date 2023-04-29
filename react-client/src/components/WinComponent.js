@@ -22,7 +22,6 @@ const WinComponent = ({guesses, handleNameSubmit }) => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         postNewScore();
-        handleNameSubmit();
         console.log(scores);
 
         // handle submit logic here
@@ -43,6 +42,7 @@ const WinComponent = ({guesses, handleNameSubmit }) => {
             })
             .then(data =>{
                 console.log(`Name: ${data.name} , score: ${data.score} , msg: ${data.msg}`)
+                handleNameSubmit();
             })
             .catch(error => {
                 console.log(error);

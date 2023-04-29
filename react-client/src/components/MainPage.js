@@ -89,9 +89,8 @@ const MainPage = ({setRandomVal, randomNum}) => {
                 (wonGame && nameSubmitted) ? <TopScores scores={scoresData}/> : null
             }
             {
-                wonGame ? null : <GuessesHistory guesses={guesses}/>
+                !wonGame ? <GuessesHistory guesses={guesses}/> : null
             }
-
         </>
     )
 }
