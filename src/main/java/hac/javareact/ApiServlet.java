@@ -33,6 +33,7 @@ public class ApiServlet extends HttpServlet {
         response.setHeader("Access-Control-Allow-Origin","*");
         try {
             List<Score> scores = loadScores();
+            System.out.println("Loaded scores" + scores);
             JsonArray jsonArray = createFormattedArray(scores);
             response.setStatus(HttpServletResponse.SC_OK);
             response.getWriter().write(jsonArray.toString());
@@ -119,37 +120,38 @@ public class ApiServlet extends HttpServlet {
     public void destroy() {
     }
 
-
-
-
     private synchronized void addScore(Score newScore) throws IOException, ClassNotFoundException {
-
-        List<Score> scores = loadScores(); // read in existing scores
-        scores.add(newScore); // add new score
-        String realPath = getServletContext().getRealPath("scores");
-        FileOutputStream fos = new FileOutputStream(realPath, false); // open file for writing (false to overwrite)
+        String realPath = getServletContext().getRealPath("scores.dat");
+        File file = new File(realPath);
+        if(!file.exists()) file.createNewFile();
+        FileOutputStream fos = new FileOutputStream(realPath, true);
         ObjectOutputStream oos = new ObjectOutputStream(fos);
-        for (Score score : scores) {
-            oos.writeObject(score); // write each score to the file
-        }
+        oos.writeObject(newScore); // write each score to the file
         oos.close();
     }
 
     private List<Score> loadScores() throws IOException, ClassNotFoundException {
 
         List<Score> scores = new ArrayList<>();
-        String realPath = getServletContext().getRealPath("scores");
+        String realPath = getServletContext().getRealPath("scores.dat");
+        System.out.println("Here0");
+        System.out.println(realPath);
         FileInputStream fis = new FileInputStream(realPath);
         ObjectInputStream ois = new ObjectInputStream(fis);
         try {
             while (true) {
+                System.out.println("Here1");
                 Score score = (Score) ois.readObject();
+                System.out.println(score.getName());
                 scores.add(score);
             }
         } catch (EOFException e) {
             // end of file reached, ignore exception
+        } finally {
+            ois.close();
+            System.out.println("Here2");
         }
-        ois.close();
+        System.out.println("Here3");
         return scores;
     }
 
