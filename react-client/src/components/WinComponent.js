@@ -2,10 +2,13 @@ import React, { useState } from 'react';
 import { Row, Col, Form, Button } from 'react-bootstrap';
 import GameInputs from "./GameInputs";
 import GuessesHistory from "./GuessesHistory";
+import TopScores from "./TopScores";
 
-const WinComponent = ({guesses}) => {
+const WinComponent = ({guesses, handleNameSubmit }) => {
     const [username, setUsername] = useState('');
     const steps = `Your score is: ${guesses}`
+    const URL = '/java_react_war/api/highscores'
+    let scores = ''
         const WinComponentStyle = {
             backgroundColor: '#BBC',
             marginLeft: '0px'
@@ -13,33 +16,36 @@ const WinComponent = ({guesses}) => {
 
     const handleUsernameChange = (event) => {
         setUsername(event.target.value);
-        console.log(event.target.value)
+        //setNameSubmitted(false);
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
-        postNewScore(event.target.value, guesses);
-        console.log(event.target.value);
-        console.log(guesses)
+        postNewScore();
+        handleNameSubmit();
+        console.log(scores);
+
         // handle submit logic here
     };
 
-    const postNewScore = (name, score) => {
-        fetch('/java_react_war/api/highscores', {
+    const postNewScore = () => {
+        fetch(`${URL}?name=${username}&score=${guesses}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                name: name,
-                score: score
-            })
+            }
         })
             .then(response => {
-                // handle the response
+                if(!response.ok){
+                    throw new Error('something happen')
+                }
+                return response.json();
+            })
+            .then(data =>{
+                console.log(`Name: ${data.name} , score: ${data.score} , msg: ${data.msg}`)
             })
             .catch(error => {
-                // handle the error
+                console.log(error);
             });
     }
 

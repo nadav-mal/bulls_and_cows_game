@@ -4,7 +4,7 @@ import DigitsInput from "./DigitsInput";
 import GameButtons from "./GameButtons";
 import GameRules from "./GameRules";
 
-function GameInputs({randomNum, compareNumbers, setWonGame, setGuessesNum, setNewValue }) {
+function GameInputs({randomNum, compareNumbers, setWonGame, setGuessesNum, setNewValue, setNameSubmitted }) {
     // all form inputs are stored in this state
     const [inputs, setInputs] = useState({});
     const [result, setResult] = useState('Your history of guesses will appear below:');
@@ -40,6 +40,7 @@ function GameInputs({randomNum, compareNumbers, setWonGame, setGuessesNum, setNe
                     setResult(null);
                     setWonGame(true);
                     setGameStarted(false);
+                    setNameSubmitted(false);
                 }
                 else {
                     setResult(

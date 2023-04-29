@@ -4,14 +4,46 @@ import { Row, Col } from 'react-bootstrap';
 import GameInputs from "./GameInputs";
 import GuessesHistory from "./GuessesHistory";
 import WinComponent from "./WinComponent";
-
+import TopScores from "./TopScores";
 const MainPage = ({setRandomVal, randomNum}) => {
     const [guesses, setGuesses] = useState([]);
     const [wonGame, setWonGame] = useState(false);
+    const [nameSubmitted, setNameSubmitted] = useState(true);
+    const [scoresData, setScoresData] = useState([]);
 
     const addGuess = (newGuess) => {
         setGuesses([newGuess, ...guesses]);
     };
+
+    const handleNameSubmit = async () => {
+        let scores = await getScores();
+        setScoresData(scores);
+        setNameSubmitted(true);
+        console.log("trigger");
+    };
+    const  getScores = async () => {
+        let highScores = ''
+        let data = await fetch('/java_react_war/api/highscores', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('something happen')
+                }
+                return response.json();
+            })
+            .then(data => {
+                return data;
+            })
+            .catch(error => {
+                console.log(error);
+            });
+        console.log(data);
+        return data;
+    }
     const compareNumbers = (randomNum, inputs) => {
 
         let cows = 0;
@@ -47,8 +79,19 @@ const MainPage = ({setRandomVal, randomNum}) => {
                 setWonGame = {setWonGame}
                 setGuessesNum={setGuesses}
                 setNewValue = {setRandomVal}
+                setNameSubmitted = {setNameSubmitted}
             />
-            {wonGame ? <WinComponent guesses={ guesses.length}/> : <GuessesHistory guesses={guesses}/>}
+            {
+                (wonGame && !nameSubmitted) ? <WinComponent guesses={guesses.length}
+                                                          handleNameSubmit={handleNameSubmit}/> : null
+            }
+            {
+                (wonGame && nameSubmitted) ? <TopScores scores={scoresData}/> : null
+            }
+            {
+                wonGame ? null : <GuessesHistory guesses={guesses}/>
+            }
+
         </>
     )
 }

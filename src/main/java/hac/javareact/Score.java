@@ -1,5 +1,7 @@
 package hac.javareact;
 
+import java.io.Serializable;
+
 public class Score implements Serializable, Comparable<Score> {
     private String name;
     private int guesses;

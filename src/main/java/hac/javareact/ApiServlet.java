@@ -1,25 +1,12 @@
 package hac.javareact;
-
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import java.io.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.annotation.WebServlet;
-
+import java.util.*;
+import java.util.stream.Collectors;
 /* You can delete this comment before submission - it's only here to help you get started.
 Your servlet should be available at "/java_react_war/api/highscores"
 assuming you don't modify the application's context path (/java_react_war).
@@ -29,77 +16,143 @@ fetch("/java_react_war/api/highscores")
 
 @WebServlet(name = "ServletApi", value = "/api/highscores")
 public class ApiServlet extends HttpServlet {
-
+    FileInputStream reader;
+    FileOutputStream writer;
     private static final String SCORES_FILE = "scores.dat";
-    private static final int MAX_HIGH_SCORES = 5;
+    private static final String nameParam = "name";
+    private static final String scoreParam = "score";
 
-    private List<Score> highScores;
-
-    @Override
-    public void init() {
-        // Load high scores from file
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(getScoresFilePath()))) {
-            highScores = (List<Score>) ois.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            // Handle file read errors
-            highScores = new ArrayList<>();
-        }
-    }
-
+    /**
+     * @param request
+     * @param response
+     * @throws IOException
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        // Retrieve top 5 high scores ordered by increasing guesses
-        List<Score> topHighScores = highScores.stream()
-                .sorted(Comparator.comparingInt(Score::getGuesses))
-                .limit(MAX_HIGH_SCORES)
-                .collect(Collectors.toList());
-
-        // Send high scores as JSON response
         response.setContentType("application/json");
-        response.getWriter().println(new Gson().toJson(topHighScores));
+        response.setHeader("Access-Control-Allow-Origin","*");
+        try {
+            List<Score> scores = loadScores();
+            JsonArray jsonArray = createFormattedArray(scores);
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.getWriter().write(jsonArray.toString());
+        } catch (ClassNotFoundException e) {
+            response.setStatus(HttpServletResponse.SC_CONFLICT);
+        }
     }
 
+    private JsonArray createFormattedArray(List<Score> scores) {
+        // Sort the scores list by guesses in descending order
+        scores.sort(Comparator.comparingInt(Score::getGuesses));
+        // Take the first 5 scores from the sorted list
+        List<Score> top5Scores = scores.stream().limit(5).collect(Collectors.toList());
+
+        //Creating a Json array of the top 5
+        JsonArray jsonArray = new JsonArray();
+        for (Score score : top5Scores) {
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("name", score.getName());
+            jsonObject.addProperty("score", score.getGuesses());
+            jsonArray.add(jsonObject);
+        }
+        return jsonArray;
+    }
+
+
+    /**
+     * @param request
+     * @param response
+     * @throws IOException
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        // Read user name and score from request body
-        String requestBody = request.getReader().lines().collect(Collectors.joining());
-        JsonObject jsonObject = new JsonParser().parse(requestBody).getAsJsonObject();
-        String username = jsonObject.get("username").getAsString();
-        int score = jsonObject.get("score").getAsInt();
 
-        // Check for duplicate user name
-        if (highScores.stream().anyMatch(hs -> hs.getUsername().equals(username))) {
+        response.setContentType("application/json");
+        response.setHeader("Access-Control-Allow-Origin","*");
+
+        String name = request.getParameter("name");
+        String scoreStr = request.getParameter("score");
+        int currScore = 0;
+        try {
+            currScore = Integer.parseInt(scoreStr);
+
+            Score highScore = new Score(name,currScore);
+            handleHighScore(response,highScore);
+        } catch (NumberFormatException e) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println("{\"error\":\"Duplicate user name\"}");
-            return;
         }
+    }
+    private synchronized void handleHighScore(HttpServletResponse res,Score score){
+        try{
+            addScore(score);
+            res.setStatus(HttpServletResponse.SC_OK);
+            // Create a JSON object with the given parameters
+            Gson gson = new Gson();
+            JsonObject jsonResponse = new JsonObject();
+            jsonResponse.addProperty("name", score.getName());
+            jsonResponse.addProperty("score", score.getGuesses());
+            jsonResponse.addProperty("msg", "You suck");
+            // Write the JSON object to the response output stream
+            PrintWriter out = res.getWriter();
+            out.print(gson.toJson(jsonResponse));
+            out.flush();
 
-        // Add new high score
-        highScores.add(new Score(username, score));
-
-        // Sort high scores by increasing guesses
-        highScores.sort(Comparator.comparingInt(Score::getGuesses));
-
-        // Keep only top 5 high scores
-        if (highScores.size() > MAX_HIGH_SCORES) {
-            highScores = highScores.subList(0, MAX_HIGH_SCORES);
+        } catch(IOException e){
+            res.setStatus(HttpServletResponse.SC_CONFLICT);
         }
-
-        // Write updated high scores to file
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(getScoresFilePath()))) {
-            oos.writeObject(highScores);
-        } catch (IOException e) {
-            // Handle file write errors
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().println("{\"error\":\"Failed to write high scores\"}");
-            return;
+        catch(ClassNotFoundException e){
+            res.setStatus(HttpServletResponse.SC_CONFLICT);
         }
-
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.getWriter().println("{\"message\":\"High score added successfully\"}");
+    }
+    @Override
+    public void init() {
+        //This for now (find something to do here)
+        //try {
+       //     writer = new FileOutputStream("scores.dat");
+       // } catch (FileNotFoundException e) {
+       //     throw new RuntimeException(e);
+        //}
     }
 
-    private String getScoresFilePath() {
-        return getServletContext().getRealPath(".") + File.separator + SCORES_FILE;
+
+    @Override
+    public void destroy() {
     }
+
+
+
+
+    private synchronized void addScore(Score newScore) throws IOException, ClassNotFoundException {
+
+        List<Score> scores = loadScores(); // read in existing scores
+        scores.add(newScore); // add new score
+        String realPath = getServletContext().getRealPath("scores");
+        FileOutputStream fos = new FileOutputStream("scores.dat", false); // open file for writing (false to overwrite)
+        ObjectOutputStream oos = new ObjectOutputStream(fos);
+        for (Score score : scores) {
+            oos.writeObject(score); // write each score to the file
+        }
+        oos.close();
+    }
+
+    private List<Score> loadScores() throws IOException, ClassNotFoundException {
+
+        List<Score> scores = new ArrayList<>();
+        String realPath = getServletContext().getRealPath("scores");
+        FileInputStream fis = new FileInputStream("scores.dat");
+        ObjectInputStream ois = new ObjectInputStream(fis);
+        try {
+            while (true) {
+                Score score = (Score) ois.readObject();
+                scores.add(score);
+            }
+        } catch (EOFException e) {
+            // end of file reached, ignore exception
+        }
+        ois.close();
+        return scores;
+    }
+
+
+
 }
