@@ -4,20 +4,32 @@ import './Components.css';
 
 const WinComponent = ({guesses, handleNameSubmit }) => {
     const [username, setUsername] = useState('');
+    const [isBadResponse, setIsBadResponse] = useState(false);
+    const [errorStatusCode, setErrorStatusCode] = useState(0);
+    const steps = `Your score is: ${guesses}`
+    const URL = '/java_react_war/api/highscores'
 
-    const steps = `Your score is: ${guesses}`;
-    const URL = '/java_react_war/api/highscores';
+    let scores = ''
+        const WinComponentStyle = {
+            backgroundColor: '#BBC',
+            marginLeft: '0px'
+        };
 
     const handleUsernameChange = (event) => {
         setUsername(event.target.value);
+        //setNameSubmitted(false);
     };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         postNewScore();
+        console.log(scores);
+
+        // handle submit logic here
     };
 
     const postNewScore = () => {
+        let isValid = true;
         fetch(`${URL}?name=${username}&score=${guesses}`, {
             method: 'POST',
             headers: {
@@ -26,18 +38,25 @@ const WinComponent = ({guesses, handleNameSubmit }) => {
         })
             .then(response => {
                 if (!response.ok) {
-                    throw new Error('Something happened');
+                    setIsBadResponse(true);
+                    response.json().then(data => {
+                        setErrorStatusCode(`Error Code: ${response.status}, Message: ${data.error}`);
+                    });
+                    setTimeout(() => setIsBadResponse(false), 5000);
+                    throw new Error();
                 }
                 return response.json();
             })
-            .then(data => {
-                console.log(`Name: ${data.name}, score: ${data.score}, msg: ${data.msg}`);
-                handleNameSubmit();
+            .then(data =>{
+                if(isValid)
+                    handleNameSubmit();
+                else
+                    throw new Error(data)
             })
-            .catch(error => {
-                console.log(error);
+            .catch(e => {
             });
     };
+
 
     return (
         <Col className="win-component col-12">
@@ -59,6 +78,7 @@ const WinComponent = ({guesses, handleNameSubmit }) => {
                     </Col>
                 </Form.Group>
             </Form>
+            {isBadResponse ? <p>{errorStatusCode}</p> : null }
         </Col>
     );
 };

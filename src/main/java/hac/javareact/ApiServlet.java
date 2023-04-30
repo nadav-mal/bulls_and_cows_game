@@ -33,9 +33,30 @@ public class ApiServlet extends HttpServlet {
             List<Score> scores = loadScores();
             JsonArray jsonArray = createFormattedArray(scores);
             response.setStatus(HttpServletResponse.SC_OK);
-            response.getWriter().write(jsonArray.toString());
+
+            // Create a JSON object with the scores array
+            JsonObject jsonResponse = new JsonObject();
+            jsonResponse.add("scores", jsonArray);
+
+            // Write the JSON object to the response output stream
+            PrintWriter out = response.getWriter();
+            out.print(jsonResponse.toString());
+            out.flush();
         } catch (ClassNotFoundException e) {
-            response.setStatus(HttpServletResponse.SC_CONFLICT);
+            sendError(response, "Failed to load scores.", HttpServletResponse.SC_CONFLICT);
+        }
+    }
+
+    private void sendError(HttpServletResponse response, String errMsg, int errorCode){
+        try{
+            response.setStatus(errorCode);
+            JsonObject jsonResponse = new JsonObject();
+            jsonResponse.addProperty("error", errMsg);
+            PrintWriter out = response.getWriter();
+            out.print(jsonResponse.toString());
+            out.flush();
+        } catch (IOException e) {
+           // No point in sending an error about "fail in trying to send an error" since its recursive
         }
     }
 
@@ -63,12 +84,9 @@ public class ApiServlet extends HttpServlet {
      * @throws IOException
      */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        System.out.println(fileName);
-
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) {
         response.setContentType("application/json");
         response.setHeader("Access-Control-Allow-Origin","*");
-
         String name = request.getParameter("name");
         String scoreStr = request.getParameter("score");
         int currScore = 0;
@@ -78,31 +96,18 @@ public class ApiServlet extends HttpServlet {
             handleHighScore(response,highScore);
         } catch (NumberFormatException e) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        } finally {
-            System.out.println("After post");
+            sendError(response, "Server has occurred an internal error", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
     private synchronized void handleHighScore(HttpServletResponse res,Score score){
         try{
             addScore(score);
             res.setStatus(HttpServletResponse.SC_OK);
-            // Create a JSON object with the given parameters
-            Gson gson = new Gson();
-            JsonObject jsonResponse = new JsonObject();
-            jsonResponse.addProperty("name", score.getName());
-            jsonResponse.addProperty("score", score.getGuesses());
-            // Write the JSON object to the response output stream
-            PrintWriter out = res.getWriter();
-            out.print(gson.toJson(jsonResponse));
-            out.flush();
-
         } catch(IOException e){
-            System.out.println("In IO ");
-            res.setStatus(HttpServletResponse.SC_CONFLICT);
+            sendError(res, "Failed to read/write to file", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
         catch(ClassNotFoundException e){
-            System.out.println("In classNotFound");
-            res.setStatus(HttpServletResponse.SC_CONFLICT);
+            sendError(res,"Failed to read scores", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
     @Override
@@ -145,7 +150,7 @@ public class ApiServlet extends HttpServlet {
         return index;
     }
 
-    private List<Score> loadScores() throws ClassNotFoundException {
+    private List<Score> loadScores() throws ClassNotFoundException, IOException {
         File file = getFile();
         List<Score> scores = new ArrayList<>();
         try(ObjectInputStream ois = new ObjectInputStream(Files.newInputStream(file.toPath()))){
@@ -162,16 +167,12 @@ public class ApiServlet extends HttpServlet {
         }
     }
 
-    private File getFile(){
-        String realPath = getServletContext().getRealPath("scores");
+    private File getFile() throws IOException{
+        String realPath = getServletContext().getRealPath(fileName);
         File file = new File(realPath);
-        try{
             if(!file.exists()){
                 file.createNewFile();
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
         return file;
     }
 }
