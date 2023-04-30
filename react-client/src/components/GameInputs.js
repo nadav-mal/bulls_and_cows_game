@@ -25,8 +25,6 @@ function GameInputs({randomNum, compareNumbers, setWonGame, setGuessesNum, setNe
         }
     };
 
-
-
     const handleSubmit = (event) => {
         event.preventDefault();
         const size = Object.keys(inputs).length;
@@ -35,28 +33,26 @@ function GameInputs({randomNum, compareNumbers, setWonGame, setGuessesNum, setNe
         } else {
             if(validateInput(inputs)) {
                 const { bulls, cows } = compareNumbers(randomNum,inputs);
-                if(bulls === 4) {
-                    setResult(null);
-                    setWonGame(true);
-                    setGameStarted(false);
-                    setNameSubmitted(false);
-                }
-                else {
-                    setResult(
-                        "Cows: " +
-                        JSON.stringify(cows) +
-                        "\nBulls: " +
-                        JSON.stringify(bulls)
-                    );
-                }
-
+                if(bulls === 4) handleWin();
+                else updateResult(bulls, cows);
             }
-            else {
-                setResult(JSON.stringify("All 4 digits must be unique."));
-            }
+            else setResult(JSON.stringify("All 4 digits must be unique."));
         }
     };
 
+    const updateResult = (bulls, cows) => {
+        setResult(
+            "Cows: " + JSON.stringify(cows) +
+            "\nBulls: " + JSON.stringify(bulls)
+        );
+    }
+
+    const handleWin = () => {
+        setResult(null);
+        setWonGame(true);
+        setGameStarted(false);
+        setNameSubmitted(false);
+    }
 
     const validateInput = (inputs) => {
         let isValid = true;

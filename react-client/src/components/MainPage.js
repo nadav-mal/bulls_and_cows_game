@@ -1,10 +1,9 @@
-
 import React, { useState } from 'react';
-import { Row, Col } from 'react-bootstrap';
 import GameInputs from "./GameInputs";
 import GuessesHistory from "./GuessesHistory";
 import WinComponent from "./WinComponent";
 import TopScores from "./TopScores";
+
 const MainPage = ({setRandomVal, randomNum}) => {
     const [guesses, setGuesses] = useState([]);
     const [wonGame, setWonGame] = useState(false);
@@ -21,8 +20,8 @@ const MainPage = ({setRandomVal, randomNum}) => {
         setNameSubmitted(true);
         console.log("trigger");
     };
+
     const  getScores = async () => {
-        let highScores = ''
         let data = await fetch('/java_react_war/api/highscores', {
             method: 'GET',
             headers: {
@@ -41,11 +40,10 @@ const MainPage = ({setRandomVal, randomNum}) => {
             .catch(error => {
                 console.log(error);
             });
-        console.log(data);
-        return data!= undefined ? data : null;
+        return data !== undefined ? data : null;
     }
-    const compareNumbers = (randomNum, inputs) => {
 
+    const compareNumbers = (randomNum, inputs) => {
         let cows = 0;
         let bulls = 0;
         const divisor = 10;
@@ -66,10 +64,9 @@ const MainPage = ({setRandomVal, randomNum}) => {
             }
         }
         guess = guess.split("").reverse().join("");
-        addGuess({guess,bulls,cows})
+        addGuess({ guess, bulls, cows })
         return { bulls, cows };
     };
-
 
     return (
         <>

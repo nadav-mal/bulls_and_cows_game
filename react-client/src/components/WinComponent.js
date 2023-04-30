@@ -1,8 +1,5 @@
 import React, { useState } from 'react';
 import { Row, Col, Form, Button } from 'react-bootstrap';
-import GameInputs from "./GameInputs";
-import GuessesHistory from "./GuessesHistory";
-import TopScores from "./TopScores";
 
 const WinComponent = ({guesses, handleNameSubmit }) => {
     const [username, setUsername] = useState('');
