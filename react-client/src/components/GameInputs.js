@@ -55,7 +55,6 @@ function GameInputs({randomNum, compareNumbers, setWonGame, setGuessesNum, setNe
     }
 
     const validateInput = (inputs) => {
-        let isValid = true;
         const digits = new Array(10).fill(false);
 
         for (let i = 0; i < Object.keys(inputs).length; i++) {
@@ -99,7 +98,9 @@ function GameInputs({randomNum, compareNumbers, setWonGame, setGuessesNum, setNe
                 {showRules ? <GameRules /> : null}
                 {gameStarted ? <DigitsInput onChange={handleChange} onSubmit={handleSubmit} /> : null}
 
-                {result ? <div className="border p-3">{result}</div> : ''}
+                {result ? <div
+                    style={{ backgroundColor:'#dde0ab', borderRadius:'20px', padding:'15px' }}
+                >{result}</div> : ''}
             </Row>
         </Col>
     );

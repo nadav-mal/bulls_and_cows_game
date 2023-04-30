@@ -11,7 +11,7 @@ function App() {
     //updateRandomValue();
     const ContainerStyle = {
         padding: '20px',
-        marginTop: '50px'
+        marginTop: '5px'
     };
     //const randomNum = getRandomNumber();
     console.log(randomValue);

@@ -23,3 +23,44 @@ h1 {
     font-size: 3rem;
     -webkit-text-stroke: 1px black;
 }
+
+.win-component {
+    background-color: #8bc34a;
+    border: 5px solid #00a300;
+    padding: 10px;
+    border-radius: 20px;
+}
+
+.win-header {
+    text-align: center;
+    margin-bottom: 10px;
+    font-size: 2rem;
+}
+
+.win-steps {
+    text-align: center;
+    margin-bottom: 15px;
+    font-size: 1.5rem;
+}
+
+.win-form {
+    text-align: center;
+}
+
+.win-input {
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+}
+
+.win-button {
+    background-color: #00a300;
+    border-color: #00a300;
+    font-size: 1.2rem;
+    padding: 10px 20px;
+    border-radius: 10px;
+}
+
+.win-button:hover {
+    background-color: #cddc39;
+    border-color: #cddc39;
+}

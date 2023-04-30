@@ -4,7 +4,7 @@ function GameRules() {
             rows="9"
             cols="33"
             readOnly
-            style={{ resize: 'none', userSelect: 'none', background:"tomato", marginBottom: '10px', backgroundColor:'#dde0ab'}}
+            style={{ resize: 'none', userSelect: 'none', marginBottom: '10px', backgroundColor:'#dde0ab'}}
             value=" The program generates a random number, while the player tries to guess it.
             The number to be guessed must be a 4 digit number, using digits from 0 to 9, each digit at most once.
             e.g. 1234 is valid, but 1233 is not valid.
