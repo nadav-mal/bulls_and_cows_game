@@ -17,6 +17,8 @@ fetch("/java_react_war/api/highscores")
 
 @WebServlet(name = "ServletApi", value = "/api/highscores")
 public class ApiServlet extends HttpServlet {
+    private String fileName;
+
     /**
      * @param request
      * @param response
@@ -29,7 +31,6 @@ public class ApiServlet extends HttpServlet {
         response.setHeader("Access-Control-Allow-Origin","*");
         try {
             List<Score> scores = loadScores();
-            System.out.println("Loaded scores" + scores);
             JsonArray jsonArray = createFormattedArray(scores);
             response.setStatus(HttpServletResponse.SC_OK);
             response.getWriter().write(jsonArray.toString());
@@ -63,6 +64,7 @@ public class ApiServlet extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        System.out.println(fileName);
 
         response.setContentType("application/json");
         response.setHeader("Access-Control-Allow-Origin","*");
@@ -105,6 +107,8 @@ public class ApiServlet extends HttpServlet {
     }
     @Override
     public void init() {
+        // Param stored in web.xml.
+        fileName = getServletContext().getInitParameter("filename");
     }
 
 
@@ -115,7 +119,7 @@ public class ApiServlet extends HttpServlet {
     private synchronized void addScore(Score newScore) throws IOException, ClassNotFoundException {
         File file = getFile();
         List<Score> scores = loadScores();
-        final int NOTFOUND= -1;
+        final int NOTFOUND = -1;
 
         int index = handleDupes(newScore, scores);
         if(index != NOTFOUND)
@@ -128,29 +132,18 @@ public class ApiServlet extends HttpServlet {
         }
     }
 
-  private int handleDupes(Score newScore, List<Score> scores){
-      int index = -1;
-      // Iterate over the scores list and check for duplicates
-      for (int i = 0; i < scores.size(); i++) {
-          Score score = scores.get(i);
-          if (score.getName().equals(newScore.getName())) {
-              if (newScore.getGuesses() < score.getGuesses())
-                  index = i;
-              break;
-          }
-      }
-      return index;
-  }
-
-    private int handleDuplicate(Score newScore, List<Score> scores){
-        // If there is a match, update the existing score to the best score of them all
+    private int handleDupes(Score newScore, List<Score> scores){
+        int index = -1;
+        // Iterate over the scores list and check for duplicates
         for (int i = 0; i < scores.size(); i++) {
             Score score = scores.get(i);
             if (score.getName().equals(newScore.getName())) {
-                return i;
+                if (newScore.getGuesses() < score.getGuesses())
+                    index = i;
+                break;
             }
         }
-        return -1;
+        return index;
     }
 
     private List<Score> loadScores() throws ClassNotFoundException {
@@ -175,14 +168,11 @@ public class ApiServlet extends HttpServlet {
         File file = new File(realPath);
         try{
             if(!file.exists()){
-                System.out.println("Creating new file");
                 file.createNewFile();
             }
         } catch (IOException e) {
-            System.out.println("Something is wrong");
             throw new RuntimeException(e);
         }
-        System.out.println("Returning file");
         return file;
     }
 }
