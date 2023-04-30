@@ -1,6 +1,5 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
-import GameInputs from "./components/GameInputs";
 import Title from "./components/Title";
 import MainPage from "./components/MainPage"
 import { Container, Row } from 'react-bootstrap';
@@ -8,12 +7,10 @@ import {useState} from "react";
 
 function App() {
     const [randomValue, setRandomValue] = useState(getRandomValue());
-    //updateRandomValue();
     const ContainerStyle = {
         padding: '20px',
         marginTop: '5px'
     };
-    //const randomNum = getRandomNumber();
     console.log(randomValue);
     function getRandomValue() {
         const digits = [];
