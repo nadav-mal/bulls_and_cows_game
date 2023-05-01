@@ -23,13 +23,9 @@ const WinComponent = ({guesses, handleNameSubmit }) => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         postNewScore();
-        console.log(scores);
-
-        // handle submit logic here
     };
 
     const postNewScore = () => {
-        let isValid = true;
         fetch(`${URL}?name=${username}&score=${guesses}`, {
             method: 'POST',
             headers: {
@@ -37,7 +33,8 @@ const WinComponent = ({guesses, handleNameSubmit }) => {
             }
         })
             .then(response => {
-                if (!response.ok) {
+                if (!response.ok)
+                {
                     setIsBadResponse(true);
                     response.json().then(data => {
                         setErrorStatusCode(`Error Code: ${response.status}, Message: ${data.error}`);
@@ -45,15 +42,10 @@ const WinComponent = ({guesses, handleNameSubmit }) => {
                     setTimeout(() => setIsBadResponse(false), 5000);
                     throw new Error();
                 }
-                return response.json();
-            })
-            .then(data =>{
-                if(isValid)
-                    handleNameSubmit();
                 else
-                    throw new Error(data)
-            })
-            .catch(e => {
+                    handleNameSubmit();
+            }).catch(e => {
+                console.log("cought in post");
             });
     };
 

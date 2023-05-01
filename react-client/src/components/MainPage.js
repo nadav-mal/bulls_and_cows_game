@@ -18,7 +18,6 @@ const MainPage = ({setRandomVal, randomNum}) => {
         let scores = await getScores();
         setScoresData(scores);
         setNameSubmitted(true);
-        console.log("trigger");
     };
 
     const  getScores = async () => {
@@ -35,6 +34,7 @@ const MainPage = ({setRandomVal, randomNum}) => {
                 return response.json();
             })
             .then(data => {
+                console.log(data);
                 return data;
             })
             .catch(error => {

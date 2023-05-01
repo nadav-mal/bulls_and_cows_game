@@ -14,7 +14,7 @@ const TopScores = ({ scores }) => {
             );
         }
 
-        return scores.map((record, index) => (
+        return scores.scores.map((record, index) => (
             <tr key={index}>
                 <td>{record.name}</td>
                 <td>{record.score}</td>

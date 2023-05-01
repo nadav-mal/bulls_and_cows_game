@@ -26,7 +26,6 @@ public class ApiServlet extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        System.out.println("In get");
         response.setContentType("application/json");
         response.setHeader("Access-Control-Allow-Origin","*");
         try {
@@ -96,6 +95,7 @@ public class ApiServlet extends HttpServlet {
             handleHighScore(response,highScore);
         } catch (NumberFormatException e) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+
             sendError(response, "Server has occurred an internal error", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
@@ -142,7 +142,7 @@ public class ApiServlet extends HttpServlet {
         for (int i = 0; i < scores.size(); i++) {
             Score score = scores.get(i);
             if (score.getName().equals(newScore.getName())) {
-                if (newScore.getGuesses() < score.getGuesses())
+                if (newScore.getGuesses() <= score.getGuesses())
                     index = i;
                 break;
             }
@@ -154,15 +154,10 @@ public class ApiServlet extends HttpServlet {
         File file = getFile();
         List<Score> scores = new ArrayList<>();
         try(ObjectInputStream ois = new ObjectInputStream(Files.newInputStream(file.toPath()))){
-            System.out.println("Before reading obj");
             scores = (List<Score>) ois.readObject();
-            System.out.println("TEST" + scores);
         } catch(EOFException e){
             //Ignore this
-            System.out.println("In EOF137--");
-
         } finally {
-            System.out.println(scores);
             return scores;
         }
     }
