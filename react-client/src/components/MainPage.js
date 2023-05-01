@@ -9,7 +9,8 @@ const MainPage = ({setRandomVal, randomNum}) => {
     const [wonGame, setWonGame] = useState(false);
     const [nameSubmitted, setNameSubmitted] = useState(true);
     const [scoresData, setScoresData] = useState([]);
-
+    const [isBadResponse, setIsBadResponse] = useState(false);
+    const [errorStatusCode, setErrorStatusCode] = useState(0);
     const addGuess = (newGuess) => {
         setGuesses([newGuess, ...guesses]);
     };
@@ -19,6 +20,14 @@ const MainPage = ({setRandomVal, randomNum}) => {
         setScoresData(scores);
         setNameSubmitted(true);
     };
+
+    const handleBadResponse = (code, msg) => {
+        setErrorStatusCode(`Error Code: ${code} \n Message: ${msg}`);
+        console.log(msg);
+        console.log(code);
+        setIsBadResponse(true);
+        setTimeout(() => setIsBadResponse(false), 5000);
+    }
 
     const  getScores = async () => {
         let data = await fetch('/java_react_war/api/highscores', {
@@ -34,7 +43,6 @@ const MainPage = ({setRandomVal, randomNum}) => {
                 return response.json();
             })
             .then(data => {
-                console.log(data);
                 return data;
             })
             .catch(error => {
@@ -77,10 +85,16 @@ const MainPage = ({setRandomVal, randomNum}) => {
                 setGuessesNum={setGuesses}
                 setNewValue = {setRandomVal}
                 setNameSubmitted = {setNameSubmitted}
+
             />
             {
-                (wonGame && !nameSubmitted) ? <WinComponent guesses={guesses.length}
-                                                          handleNameSubmit={handleNameSubmit}/> : null
+                (wonGame && !nameSubmitted) ? <WinComponent
+                    guesses={guesses.length}
+                    handleNameSubmit={handleNameSubmit}
+                    handleBadResponse={handleBadResponse}
+                    isBadResponse={isBadResponse}
+                    errorStatusCode={errorStatusCode}
+                /> : null
             }
             {
                 (wonGame && nameSubmitted) ? <TopScores scores={scoresData}/> : null

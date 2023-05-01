@@ -1,5 +1,4 @@
 package hac.javareact;
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import java.io.*;
@@ -8,12 +7,7 @@ import javax.servlet.annotation.*;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.stream.Collectors;
-/* You can delete this comment before submission - it's only here to help you get started.
-Your servlet should be available at "/java_react_war/api/highscores"
-assuming you don't modify the application's context path (/java_react_war).
-on the client side, you can send request to the servlet using:
-fetch("/java_react_war/api/highscores")
-*/
+
 
 @WebServlet(name = "ServletApi", value = "/api/highscores")
 public class ApiServlet extends HttpServlet {
@@ -80,15 +74,15 @@ public class ApiServlet extends HttpServlet {
     /**
      * @param request
      * @param response
-     * @throws IOException
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) {
+        sendError(response, "somethign bad", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         response.setContentType("application/json");
         response.setHeader("Access-Control-Allow-Origin","*");
         String name = request.getParameter("name");
         String scoreStr = request.getParameter("score");
-        int currScore = 0;
+        int currScore;
         try {
             currScore = Integer.parseInt(scoreStr);
             Score highScore = new Score(name,currScore);

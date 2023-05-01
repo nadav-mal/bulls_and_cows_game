@@ -1,19 +1,12 @@
 import React, { useState } from 'react';
 import { Row, Col, Form, Button } from 'react-bootstrap';
 import './Components.css';
-
-const WinComponent = ({guesses, handleNameSubmit }) => {
+import ErrorMessage from "./ErrorMessage";
+const WinComponent = ({guesses, handleNameSubmit, handleBadResponse, isBadResponse, errorStatusCode  }) => {
     const [username, setUsername] = useState('');
-    const [isBadResponse, setIsBadResponse] = useState(false);
-    const [errorStatusCode, setErrorStatusCode] = useState(0);
     const steps = `Your score is: ${guesses}`
     const URL = '/java_react_war/api/highscores'
 
-    let scores = ''
-        const WinComponentStyle = {
-            backgroundColor: '#BBC',
-            marginLeft: '0px'
-        };
 
     const handleUsernameChange = (event) => {
         setUsername(event.target.value);
@@ -33,21 +26,21 @@ const WinComponent = ({guesses, handleNameSubmit }) => {
             }
         })
             .then(response => {
-                if (!response.ok)
-                {
-                    setIsBadResponse(true);
-                    response.json().then(data => {
-                        setErrorStatusCode(`Error Code: ${response.status}, Message: ${data.error}`);
-                    });
-                    setTimeout(() => setIsBadResponse(false), 5000);
-                    throw new Error();
+                if (!response.ok) {
+                    console.log("in here");
+                    response.json()
+                        .then(data => {
+                            handleBadResponse(response.status, data.error); })
+                        .catch(() =>{
+                            handleBadResponse(500, "Connection with the server is bad");
+                        });
                 }
-                else
-                    handleNameSubmit();
-            }).catch(e => {
-                console.log("cought in post");
+                else handleNameSubmit();
+            }).catch(() => {
+                handleBadResponse(450, "An unexpected runtime error");
             });
     };
+
 
 
     return (
@@ -70,7 +63,7 @@ const WinComponent = ({guesses, handleNameSubmit }) => {
                     </Col>
                 </Form.Group>
             </Form>
-            {isBadResponse ? <p>{errorStatusCode}</p> : null }
+            {isBadResponse ? <ErrorMessage message={errorStatusCode}/> : null }
         </Col>
     );
 };
