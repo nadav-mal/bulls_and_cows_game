@@ -1,3 +1,8 @@
+/**
+ * A React component that displays the rules for the game.
+ *
+ * @returns {JSX.Element} A React component that displays the game rules as a read-only textarea.
+ */
 function GameRules() {
     return (
         <textarea

@@ -1,6 +1,12 @@
-import {Row, Col} from "react-bootstrap";
-import React, { useState } from 'react';
-
+/**
+ * Renders two buttons for starting a new game and showing the game rules.
+ *
+ * @param {function} onNewGameClick A callback function to handle when the "Start New Game" button is clicked.
+ * @param {function} onShowRulesClick A callback function to handle when the "Show Rules" button is clicked.
+ * @param {string} name The name to display on the "Show Rules" button.
+ */
+import { Row, Col } from "react-bootstrap";
+import React from 'react';
 
 const GameButtons = ({ onNewGameClick, onShowRulesClick, name }) => {
     return (
