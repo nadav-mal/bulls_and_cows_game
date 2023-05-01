@@ -1,3 +1,8 @@
+import React, { useState } from 'react';
+import { Row, Col, Form, Button } from 'react-bootstrap';
+import './Components.css';
+import ErrorMessage from "./ErrorMessage";
+
 /**
  * A React component that displays a form for submitting a score and username after winning the game.
  *
@@ -8,11 +13,6 @@
  * @param {string} errorStatusCode The error message to display when there is a bad response from the server.
  * @returns {JSX.Element} A React component that displays a form for submitting a score and username.
  */
-import React, { useState } from 'react';
-import { Row, Col, Form, Button } from 'react-bootstrap';
-import './Components.css';
-import ErrorMessage from "./ErrorMessage";
-
 const WinComponent = ({ guesses, handleNameSubmit, handleBadResponse, isBadResponse, errorStatusCode }) => {
     const [username, setUsername] = useState('');
     const steps = `Your score is: ${guesses}`

@@ -1,8 +1,17 @@
 import React from 'react';
 import { Table } from 'react-bootstrap';
 
+/**
+ A React component that displays a table of top scores.
+ @param {Object} scores An object containing an array of scores to display in the table.
+ @param {Array} scores.scores An array of score records containing the name and number of guesses.
+ @returns {JSX.Element} A React component that displays a table of top scores.
+ */
 const TopScores = ({ scores }) => {
 
+    /**
+     * Renders the rows of the score table based on the scores passed as a prop.
+     */
     const renderScores = () => {
         if(!scores)
             return (<></>)
