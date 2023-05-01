@@ -1,6 +1,16 @@
 import React from 'react';
 import { Row, Col, Table } from 'react-bootstrap';
 
+
+/**
+
+ React component that displays the history of guesses made by the user during a game of Bulls and Cows.
+ @param {Object[]} guesses - Array of guess objects containing information about each guess made.
+ @param {string} guesses[].guess - The guess made by the user.
+ @param {number} guesses[].bulls - The number of bulls in the guess.
+ @param {number} guesses[].cows - The number of cows in the guess.
+ @returns {JSX.Element} - React component that displays the history of guesses made by the user during a game of Bulls and Cows.
+ */
 const GuessesHistory = ({ guesses }) => {
     const TABLE_HEIGHT = '300px';
     const rowStyle = {

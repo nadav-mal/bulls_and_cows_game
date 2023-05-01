@@ -3,7 +3,13 @@ import { Row, Col } from 'react-bootstrap';
 import DigitsInput from "./DigitsInput";
 import GameButtons from "./GameButtons";
 import GameRules from "./GameRules";
-
+/**
+ * The `GameInputs` component is the first page component which contains all inputs by the user.
+ * He also receives all states which help him manage screens replacement and renders
+ * @param {Function} onChange - A function that is called whenever the user selects a digit from a dropdown.
+ * @param {Function} onSubmit - A function that is called when the form is submitted.
+ * @returns {JSX.Element} A React element representing the DigitsInput form.
+ */
 function GameInputs({randomNum, compareNumbers, setWonGame, setGuessesNum, setNewValue, setNameSubmitted }) {
     // all form inputs are stored in this state
     const [inputs, setInputs] = useState({});
@@ -13,6 +19,16 @@ function GameInputs({randomNum, compareNumbers, setWonGame, setGuessesNum, setNe
     const [gameStarted, setGameStarted] = useState(true);
     const [showRules, setShowRules] = useState(false);
 
+
+    /**
+     The handleChange function is an event handler that is called when the user selects a digit from a dropdown.
+     @param {string} name - The name of the dropdown.
+     @param {string} value - The selected value.
+     @returns {void}
+     The function updates the inputs state based on the selected value. If the selected value is empty,
+     it deletes the corresponding key from the inputs object. Otherwise, it adds or updates the key-value pair
+     in the inputs object. This function is used in the GameInputs component to manage user inputs.
+     */
     const handleChange = (name, value) => {
         if (value === "") {
             setInputs(prevInputs => {
@@ -24,7 +40,13 @@ function GameInputs({randomNum, compareNumbers, setWonGame, setGuessesNum, setNe
             setInputs(values => ({...values, [name]: value}));
         }
     };
-
+    /**
+     Event handler for submitting a guess.
+     @param {Event} event - The submit event.
+     @returns {void}
+     Validates the user input and updates the result state with the number of bulls and cows.
+     If the user guesses the correct number, the handleWin function is called.
+     */
     const handleSubmit = (event) => {
         event.preventDefault();
         const size = Object.keys(inputs).length;
@@ -40,20 +62,25 @@ function GameInputs({randomNum, compareNumbers, setWonGame, setGuessesNum, setNe
         }
     };
 
+    //Updating results string to the state which is later shown
     const updateResult = (bulls, cows) => {
         setResult(
             "Cows: " + JSON.stringify(cows) +
             "\nBulls: " + JSON.stringify(bulls)
         );
     }
-
+    //Handling all states to get them back to their initial state
     const handleWin = () => {
         setResult(null);
         setWonGame(true);
         setGameStarted(false);
         setNameSubmitted(false);
     }
-
+    /**
+     * An O(n) solution to make sure that no digit appears twice
+     * @param inputs - Input components
+     * @returns {boolean} If a digit was inserted twice
+     */
     const validateInput = (inputs) => {
         const digits = new Array(10).fill(false);
 
@@ -67,7 +94,8 @@ function GameInputs({randomNum, compareNumbers, setWonGame, setGuessesNum, setNe
 
         return true;
     };
-
+    /** Returning all states to handle a user's click on the new game btn
+     */
     const handleNewGameClick = () => {
         setInputs({});
         setResult('');
@@ -76,7 +104,8 @@ function GameInputs({randomNum, compareNumbers, setWonGame, setGuessesNum, setNe
         setGameStarted(true);
         setNewValue();
     };
-
+    /** Handling a user's click on the showRules btn (It's a toggle)
+     */
     const handleShowRulesClick = () => {
         setShowRules(prevShowRules => !prevShowRules);
     };

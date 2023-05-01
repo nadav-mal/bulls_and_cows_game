@@ -1,6 +1,9 @@
 import React from 'react';
 import './Components.css';
-
+/**
+ * The `ErrorMessage` component is used to display error messages from network calls (backend errors)
+ * @returns {JSX.Element} A React element representing the DigitsInput form.
+ */
 const ErrorMessage = ({ message }) => {
     return (
         <div className="error-message">

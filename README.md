@@ -1,30 +1,17 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-24ddc0f5d75046c5622901739e7c5dd533143b0c8e959d652212380cedb1ea36.svg)](https://classroom.github.com/a/YDg-_nm7)
 ## Authors
-* Name:  Email:
-* Name:  Email:
+* Name:  Email: Ely Asaf ID 319027
+* Name:  Email: Nadav Malul ID 206762973
 
 ## Explanations
 
-(Explain here your project)
 
-## How to use this template
-This is the template for a project where front-end and back-end are separated.
-The front-end is a React application, the back-end is a Java Web application
-including a Servlet for REST API endpoints.
+This is a web-based implementation of the Bulls and Cows game, also known as "Bulls and Bulls", where the player tries to guess a random 4-digit number using digits from 0 to 9, with no repetition of digits. For each guess, the game displays the number of bulls and cows. A bull represents a correct digit in the correct position, while a cow represents a correct digit in the wrong position. The player wins the game if they guess the number with 4 bulls.
 
-### Create a run configuration for the Server
-* In IntelliJ, go to Run->Edit Configurations
-* Click on the + sign and select Tomcat Server -> Local
-* In the Tomcat Server Settings, select your local installation of tomcat (you can download it from https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.45/bin/apache-tomcat-9.0.45.tar.gz)
-* In the Deployment tab, select the java-react:war file to deploy (the war file in the target folder of your project), IntelliJ should automatically detect it and display a "Fix" button. Click on it.
-* uncheck the "After launch: Open in browser" checkbox (we don't want to open the browser when we run the server, it's a REST API server)
-* Click on the OK button
-
-
-### initializing IntelliJ
-In case you get into trouble with IntelliJ, you should close the project,
-delete the .idea folder, re-open the project and follow the instructions above to
-recreate a run configuration.
+The solution consists of a React frontend and a Servlet backend. The backend provides endpoints for adding a player's name and score to the high scores, as well as retrieving the top 5 high scores ordered by increasing guesses. The high scores are stored in a file named scores.dat using ObjectStreams.
+<h1> Example API calls for postman: <h1>
+<p> POST localhost:8080/java_react_war/api/highscores?name=nadav&score=1 <p>
+<p> GET localhost:8080/java_react_war/api/highscores <p>
 
 ###  dependencies
 The template depends on:

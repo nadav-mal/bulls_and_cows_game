@@ -1,5 +1,11 @@
 import './Components.css'; // import any styling for the dropdown here
 
+/**
+ * The `DigitDropdown` component is a digit dropdown (picker) component
+ * @param {Function} onChange - A function that is called whenever the user selects a digit from a dropdown.
+ * @param {Function} onSubmit - A function that is called when the form is submitted.
+ * @returns {JSX.Element} A React element representing the DigitsInput form.
+ */
 const DigitDropdown = ({ name, onChange }) => {
     const handleChange = (e) => {
         const value = e.target.value;

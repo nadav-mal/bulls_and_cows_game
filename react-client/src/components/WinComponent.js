@@ -19,8 +19,7 @@ const WinComponent = ({ guesses, handleNameSubmit, handleBadResponse, isBadRespo
     const URL = '/java_react_war/api/highscores'
 
     /**
-     * Handles changes to the input field for the username.
-     *
+     * Handles changes to the input field for the username
      * @param {Object} event The event object representing the change in the input field.
      */
     const handleUsernameChange = (event) => {
