@@ -110,6 +110,13 @@ public class ApiServlet extends HttpServlet {
             sendError(response, "Server has occurred an internal error", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
+
+    /**
+     This method handles a high score by adding it to the list of scores and returning a success status to the response.
+     It is synchronized to prevent concurrent access to the scores file.
+     @param res the HttpServletResponse object representing the response to the client
+     @param score the Score object representing the high score to be added
+     */
     private synchronized void handleHighScore(HttpServletResponse res,Score score){
         try{
             addScore(score);
@@ -121,16 +128,32 @@ public class ApiServlet extends HttpServlet {
             sendError(res,"Failed to read scores", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
+
+    /**
+     Overrides the init method of the HttpServlet class to retrieve a parameter from the web.xml file and store it in the
+     fileName variable. This parameter represents the name of the file containing the high scores.
+     */
     @Override
     public void init() {
         // Param stored in web.xml.
         fileName = getServletContext().getInitParameter("filename");
     }
 
+    /**
+     Overrides the destroy method of the HttpServlet class. This method is called when the servlet is being unloaded,
+     and can be used to release any resources held by the servlet.
+     */
     @Override
     public void destroy() {
     }
 
+    /**
+     This method adds a new score to the list of scores, and writes the updated list to the scores file.
+     It is synchronized to prevent concurrent access to the scores file.
+     @param newScore the Score object representing the new score to be added
+     @throws IOException if there was an error reading or writing to the scores file
+     @throws ClassNotFoundException if there was an error reading the scores from the file due to a missing class
+     */
     private synchronized void addScore(Score newScore) throws IOException, ClassNotFoundException {
         File file = getFile();
         List<Score> scores = loadScores();
@@ -147,6 +170,18 @@ public class ApiServlet extends HttpServlet {
         }
     }
 
+    /**
+     This method checks if the list of scores already contains a score with the same name as the new score being added.
+     If a score with the same name is found, the method checks if the new score has a lower number of guesses than the existing
+     score. If it does, the method returns the index of the existing score in the list so that it can be replaced with the new score.
+     If a score with the same name is found, but the new score has a higher number of guesses, the method returns -1 to indicate
+     that the new score should not be added to the list. If no score with the same name is found, the method returns -1 to indicate
+     that the new score should be added to the end of the list.
+     @param newScore the Score object representing the new score being added
+     @param scores the List of Score objects representing the current high scores
+     @return the index of an existing score with the same name as the new score if it has a higher number of guesses, or -1 if the
+     new score should be added to the end of the list or should not be added at all
+     */
     private int handleDupes(Score newScore, List<Score> scores){
         int index = -1;
         // Iterate over the scores list and check for duplicates
@@ -161,6 +196,14 @@ public class ApiServlet extends HttpServlet {
         return index;
     }
 
+    /**
+     This method reads the list of scores from the scores file and returns it as a List of Score objects.
+     If the file is empty, an empty list is returned. If the file does not exist, an empty list is returned and a new file
+     will be created when a new score is added.
+     @return the List of Score objects representing the current high scores
+     @throws ClassNotFoundException if there was an error reading the scores from the file due to a missing class
+     @throws IOException if there was an error reading the scores from the file
+     */
     private List<Score> loadScores() throws ClassNotFoundException, IOException {
         File file = getFile();
         List<Score> scores = new ArrayList<>();
@@ -173,6 +216,12 @@ public class ApiServlet extends HttpServlet {
         }
     }
 
+    /**
+     This method retrieves the file object representing the file containing the high scores. If the file does not exist,
+     a new file will be created. The file name is obtained from the fileName variable, which is set during initialization.
+     @return the File object representing the high scores file
+     @throws IOException if there was an error creating the file
+     */
     private File getFile() throws IOException{
         String realPath = getServletContext().getRealPath(fileName);
         File file = new File(realPath);
