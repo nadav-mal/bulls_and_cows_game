@@ -94,7 +94,6 @@ public class ApiServlet extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) {
-        sendError(response, "somethign bad", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         response.setContentType("application/json");
         response.setHeader("Access-Control-Allow-Origin","*");
         String name = request.getParameter("name");

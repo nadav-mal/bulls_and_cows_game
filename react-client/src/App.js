@@ -16,6 +16,7 @@ function App() {
      getRandomValue function.
      */
     const [randomValue, setRandomValue] = useState(getRandomValue());
+    console.log(randomValue);
     /**
      The ContainerStyle object is used to define some styling properties for the Container component from react-bootstrap.
      */
@@ -23,6 +24,7 @@ function App() {
         padding: '20px',
         marginTop: '5px'
     };
+
     /**
      The getRandomValue function generates a random 4-digit number with no repeating digits.
      @return {string} A string representing a 4-digit number with no repeating digits.

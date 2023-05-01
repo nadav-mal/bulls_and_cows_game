@@ -1,5 +1,10 @@
 import { Row, Col } from 'react-bootstrap';
 
+
+/**
+ React component that displays the title of the Bulls and Cows game on a background image.
+ @returns {JSX.Element} - React component that displays the title of the Bulls and Cows game on a background image.
+ */
 function Title() {
     const divStyle = {
         backgroundImage: 'url(BullsCowsImg.jpg)',
