@@ -1,6 +1,6 @@
 ## Authors
-* Name:  Email: Ely Asaf 
-* Name:  Email: Nadav Malul  
+* Name:  Ely Asaf 
+* Name:  Nadav Malul  
 
 ## Explanations
 
